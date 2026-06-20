@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>URL Shortener</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      max-width: 640px; margin: 4rem auto; padding: 0 1rem; line-height: 1.5;
+    }
+    h1 { font-size: 1.6rem; }
+    form { display: flex; gap: .5rem; margin: 1.5rem 0; }
+    input[type=url] { flex: 1; padding: .6rem .8rem; font-size: 1rem; }
+    button { padding: .6rem 1rem; font-size: 1rem; cursor: pointer; }
+    .card { border: 1px solid #8884; border-radius: 8px; padding: 1rem; margin-top: 1rem; }
+    .muted { opacity: .7; font-size: .9rem; }
+    a { word-break: break-all; }
+    .error { color: #c0392b; }
+  </style>
+</head>
+<body>
+  <h1>🔗 URL Shortener</h1>
+  <p class="muted">Collez une URL longue pour obtenir un code court.</p>
+
+  <form id="shorten-form">
+    <input type="url" id="url" placeholder="https://exemple.com/page/tres/longue" required />
+    <button type="submit">Raccourcir</button>
+  </form>
+
+  <div id="result"></div>
+
+  <script>
+    const form = document.getElementById("shorten-form");
+    const result = document.getElementById("result");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      result.innerHTML = "";
+      const url = document.getElementById("url").value;
+      try {
+        const res = await fetch("/shorten", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          result.innerHTML = `<p class="error">Erreur : ${err.detail || res.status}</p>`;
+          return;
+        }
+        const data = await res.json();
+        result.innerHTML = `
+          <div class="card">
+            <p>Lien court : <a href="${data.short_url}" target="_blank">${data.short_url}</a></p>
+            <p class="muted">Code : <code>${data.code}</code> —
+              <a href="/stats/${data.code}" target="_blank">voir les stats</a></p>
+          </div>`;
+      } catch (err) {
+        result.innerHTML = `<p class="error">Erreur réseau : ${err}</p>`;
+      }
+    });
+  </script>
+</body>
+</html>
