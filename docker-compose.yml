@@ -1,0 +1,41 @@
+services:
+  validator-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.validator
+    image: url-shortener/validator-service
+    ports:
+      - "8001:8001"
+    networks:
+      - app-net
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx,sys; sys.exit(0 if httpx.get('http://localhost:8001/health').status_code==200 else 1)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  shortener-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.shortener
+    image: url-shortener/shortener-service
+    ports:
+      - "8000:8000"
+    environment:
+      # The shortener reaches the validator by its compose service name.
+      VALIDATOR_URL: "http://validator-service:8001"
+      DATABASE_URL: "sqlite:////data/shortener.db"
+    volumes:
+      - shortener-data:/data
+    depends_on:
+      validator-service:
+        condition: service_healthy
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    driver: bridge
+
+volumes:
+  shortener-data:
