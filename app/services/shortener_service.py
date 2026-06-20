@@ -1,5 +1,6 @@
 """Business logic for creating, resolving and counting short links (SERVICES)."""
 
+import re
 import secrets
 import string
 
@@ -11,6 +12,22 @@ from app.services.validator_service import ValidatorClient
 ALPHABET = string.ascii_letters + string.digits
 CODE_LENGTH = 6
 MAX_COLLISION_RETRIES = 10
+
+# Matches an explicit URI scheme such as "http://", "https://" or "ftp://".
+_SCHEME_RE = re.compile(r"^[a-zA-Z][a-zA-Z0-9+.\-]*://")
+
+
+def normalize_url(url: str) -> str:
+    """Add a default ``https://`` scheme when the user omits it.
+
+    Accepts inputs like ``test.fr``, ``www.test.fr`` or ``http://test.fr`` and
+    returns a fully-qualified URL. An existing scheme (even non-http, so the
+    validator can reject it properly) is left untouched.
+    """
+    url = url.strip()
+    if url and not _SCHEME_RE.match(url):
+        url = f"https://{url}"
+    return url
 
 
 class InvalidURLError(Exception):
@@ -41,7 +58,8 @@ class ShortenerService:
         raise RuntimeError("Unable to generate a unique code after several retries")
 
     def create_short_link(self, url: str) -> str:
-        """Validate ``url`` then create and persist a new short link."""
+        """Normalize, validate, then create and persist a new short link."""
+        url = normalize_url(url)
         if not self.validator.validate(url):
             raise InvalidURLError(url)
         code = self._unique_code()

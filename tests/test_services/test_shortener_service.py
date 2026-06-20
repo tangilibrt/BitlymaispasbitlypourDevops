@@ -12,6 +12,7 @@ from app.services.shortener_service import (
     InvalidURLError,
     LinkNotFoundError,
     ShortenerService,
+    normalize_url,
 )
 
 
@@ -19,6 +20,37 @@ def _service(repo=None, validator=None):
     repo = repo or MagicMock()
     validator = validator or MagicMock()
     return ShortenerService(repo, validator), repo, validator
+
+
+@pytest.mark.parametrize(
+    "raw,expected",
+    [
+        ("test.fr", "https://test.fr"),
+        ("www.test.fr", "https://www.test.fr"),
+        ("  example.com/path  ", "https://example.com/path"),
+        ("http://test.fr", "http://test.fr"),
+        ("https://test.fr", "https://test.fr"),
+        ("HTTPS://Test.fr", "HTTPS://Test.fr"),
+        ("ftp://files.test.fr", "ftp://files.test.fr"),
+        ("", ""),
+    ],
+)
+def test_normalize_url(raw, expected):
+    assert normalize_url(raw) == expected
+
+
+def test_create_short_link_normalizes_schemeless_url():
+    repo = MagicMock()
+    repo.code_exists.return_value = False
+    validator = MagicMock()
+    validator.validate.return_value = True
+    service, _, _ = _service(repo, validator)
+
+    code = service.create_short_link("www.example.com")
+
+    # The validated and stored URL carries the default scheme.
+    validator.validate.assert_called_once_with("https://www.example.com")
+    repo.create_link.assert_called_once_with(code, "https://www.example.com")
 
 
 def test_generate_code_length_and_alphabet():
