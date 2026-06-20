@@ -1,0 +1,20 @@
+[MASTER]
+ignore=.venv,tests
+fail-under=8.5
+
+[MESSAGES CONTROL]
+# Disabled rules that are noisy for a small FastAPI/SQLAlchemy app.
+disable=
+    missing-module-docstring,
+    too-few-public-methods,
+    duplicate-code,
+    cyclic-import
+
+[FORMAT]
+max-line-length=100
+
+[DESIGN]
+max-args=6
+
+[BASIC]
+good-names=db,id,fn,e
