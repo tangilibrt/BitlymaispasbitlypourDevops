@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Galerie de concepts · URL Shortener</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { min-height: 100vh; font-family: "Segoe UI", system-ui, sans-serif; color: #eaf0ff;
+    background: radial-gradient(ellipse at top, #1a1f3d, #0a0a14); padding: 48px 20px; }
+  header { text-align: center; margin-bottom: 40px; }
+  h1 { font-size: 2rem; font-weight: 800;
+    background: linear-gradient(90deg, #00e5ff, #7b5cff, #ff5cc8); -webkit-background-clip: text;
+    background-clip: text; color: transparent; }
+  header p { color: #8b93c4; margin-top: 8px; }
+  .grid { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    max-width: 980px; margin: 0 auto; }
+  a.card { text-decoration: none; color: inherit; border-radius: 18px; padding: 26px 22px;
+    border: 1px solid rgba(255,255,255,.12); position: relative; overflow: hidden;
+    transition: transform .2s, box-shadow .2s; display: block; }
+  a.card:hover { transform: translateY(-6px); box-shadow: 0 18px 50px rgba(0,0,0,.5); }
+  .tag { font-size: .72rem; letter-spacing: 2px; text-transform: uppercase; opacity: .8; }
+  .card h2 { font-size: 1.3rem; margin: 8px 0 6px; }
+  .card p { font-size: .86rem; color: #b9c1e6; line-height: 1.5; }
+  .go { margin-top: 16px; font-weight: 700; font-size: .85rem; }
+  .c1 { background: radial-gradient(circle at 70% 20%, rgba(123,92,255,.35), transparent 60%), #11132a; }
+  .c1 .go { color: #00e5ff; }
+  .c2 { background: radial-gradient(circle at 70% 20%, rgba(255,46,99,.35), transparent 60%), #0e1117;
+    background-image: linear-gradient(rgba(0,255,209,.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,209,.06) 1px, transparent 1px), linear-gradient(#0e1117,#0e1117);
+    background-size: 22px 22px, 22px 22px, 100% 100%; }
+  .c2 .go { color: #ff2e63; }
+  .c3 { background: linear-gradient(160deg, #2b1055, #7d2a8b); } .c3 .go { color: #2de2e6; }
+  .c4 { background: linear-gradient(160deg, #ffd9a0, #ff6a88); color: #4a2f1e; } .c4 .go { color: #5a2a1c; }
+  .c4 p { color: #6a3a2a; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>4 façons d'illustrer le « raccourci »</h1>
+    <p>Mêmes fonctions, mises en scène spectaculaires. Clique un concept et appuie sur le bouton.</p>
+  </header>
+  <div class="grid">
+    <a class="card c1" href="blackhole.html">
+      <div class="tag">Concept 01</div><h2>🕳️ Trou Noir</h2>
+      <p>L'URL se désintègre en particules aspirées dans une singularité, puis renaît en code court. Glassmorphism cosmique.</p>
+      <div class="go">Ouvrir la démo →</div>
+    </a>
+    <a class="card c2" href="laser.html">
+      <div class="tag">Concept 02</div><h2>✂️ Ciseaux Laser</h2>
+      <p>L'URL devient un ruban ; un faisceau laser la tranche, l'excédent tombe avec gravité, le code reste et brille. Cyberpunk néon.</p>
+      <div class="go">Ouvrir la démo →</div>
+    </a>
+    <a class="card c3" href="synthwave.html">
+      <div class="tag">Concept 03</div><h2>🌀 Téléportation</h2>
+      <p>L'URL se télescope dans un wormhole de néons sur une grille synthwave. Soleil rétro et anneaux pulsants.</p>
+      <div class="go">Ouvrir la démo →</div>
+    </a>
+    <a class="card c4" href="origami.html">
+      <div class="tag">Concept 04</div><h2>📄 Origami</h2>
+      <p>L'URL est une bande de papier qui se replie en accordéon jusqu'à devenir une étiquette compacte. Doux, élégant, chaleureux.</p>
+      <div class="go">Ouvrir la démo →</div>
+    </a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Concept · Ciseaux Laser</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --laser: #ff2e63; --grid: #00ffd1; }
+  body {
+    min-height: 100vh; font-family: "Segoe UI", system-ui, sans-serif; color: #e8fff8;
+    background: #0a0d12;
+    background-image:
+      linear-gradient(rgba(0,255,209,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,209,.05) 1px, transparent 1px),
+      radial-gradient(ellipse at 50% 0%, rgba(255,46,99,.18), transparent 60%);
+    background-size: 34px 34px, 34px 34px, 100% 100%;
+    display: grid; place-items: center; overflow: hidden;
+  }
+  .back { position: fixed; top: 18px; left: 20px; color: #6fa; text-decoration: none;
+    font-size: .9rem; opacity: .8; } .back:hover { color: #fff; }
+
+  .stage { width: min(620px, 94vw); text-align: center; }
+  h1 { font-size: 1.7rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
+    color: #fff; text-shadow: 0 0 16px rgba(255,46,99,.7); }
+  .sub { color: #6f8c86; margin: 6px 0 34px; font-size: .9rem; }
+
+  /* the ribbon to be cut */
+  .ribbon-wrap { position: relative; height: 90px; margin-bottom: 24px; }
+  .ribbon {
+    position: absolute; top: 24px; left: 50%; transform: translateX(-50%);
+    display: flex; font: 700 1.05rem/1 monospace; white-space: nowrap;
+  }
+  .seg {
+    padding: 14px 4px; background: linear-gradient(180deg, #1a2230, #0e141d);
+    border-top: 1px solid #2bd; border-bottom: 1px solid #134;
+  }
+  .keep  { color: #00ffd1; text-shadow: 0 0 10px rgba(0,255,209,.8);
+    border-left: 3px solid var(--grid); padding-left: 12px; border-radius: 8px 0 0 8px; }
+  .drop  { color: #5a6b78; }
+  .drop.cut { animation: fall 1s ease-in forwards; }
+  @keyframes fall {
+    to { transform: translate(40px, 240px) rotate(28deg); opacity: 0; filter: blur(2px); }
+  }
+  /* laser beam */
+  .beam {
+    position: absolute; top: 0; bottom: 0; width: 3px; left: 50%;
+    background: linear-gradient(var(--laser), #fff, var(--laser));
+    box-shadow: 0 0 14px 3px var(--laser); opacity: 0;
+  }
+  .beam.fire { animation: sweep .55s ease-out; }
+  @keyframes sweep {
+    0% { opacity: 0; left: 8%; } 30% { opacity: 1; }
+    100% { opacity: 0; left: 50%; }
+  }
+  .scissor { position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
+    font-size: 1.5rem; filter: drop-shadow(0 0 6px var(--laser)); }
+
+  .field { display: flex; gap: 10px; }
+  input { flex: 1; padding: 14px 16px; border-radius: 10px; border: 1px solid #1d6;
+    background: #0c1118; color: #cffef2; font-size: 1rem; outline: none; }
+  input:focus { box-shadow: 0 0 0 3px rgba(0,255,209,.18); }
+  button { padding: 14px 24px; border: none; border-radius: 10px; cursor: pointer; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 1px; color: #0a0d12;
+    background: linear-gradient(90deg, var(--laser), #ff7aa8); box-shadow: 0 6px 22px rgba(255,46,99,.5); }
+  button:hover { filter: brightness(1.1); }
+
+  .result { margin-top: 26px; opacity: 0; transform: translateY(12px); transition: .5s; }
+  .result.show { opacity: 1; transform: none; }
+  .card { display: inline-block; padding: 14px 22px; border-radius: 12px;
+    background: rgba(0,255,209,.08); border: 1px solid rgba(0,255,209,.4); }
+  .card .code { font: 800 1.6rem/1 monospace; color: var(--grid); letter-spacing: 2px;
+    text-shadow: 0 0 14px rgba(0,255,209,.8); }
+  .card .stat { color: #7fae9f; font-size: .82rem; margin-top: 6px; }
+</style>
+</head>
+<body>
+  <a class="back" href="index.html">← Galerie</a>
+  <div class="stage">
+    <h1>Laser Cut URL</h1>
+    <p class="sub">Le laser tranche l'URL ; l'excédent tombe, le code reste ✂</p>
+
+    <div class="ribbon-wrap">
+      <div class="ribbon" id="ribbon">
+        <span class="seg keep" id="keep">aBc123</span>
+        <span class="seg drop" id="drop">/produits/categorie/42?ref=longue</span>
+      </div>
+      <div class="beam" id="beam"></div>
+      <div class="scissor">✂️</div>
+    </div>
+
+    <div class="field">
+      <input id="url" type="text" value="https://exemple.com/produits/categorie/42?ref=longue" />
+      <button id="go">Trancher</button>
+    </div>
+
+    <div class="result" id="result">
+      <div class="card">
+        <div class="code" id="code">aBc123</div>
+        <div class="stat">https://sho.rt/aBc123 · clics : 0</div>
+      </div>
+    </div>
+  </div>
+<script>
+  const code62 = () => Array.from({length:6}, () =>
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"[Math.floor(Math.random()*62)]).join("");
+  document.getElementById("go").addEventListener("click", () => {
+    const raw = document.getElementById("url").value || "https://exemple.com/x";
+    const tail = raw.replace(/^https?:\/\/[^/]+/, "") || "/";
+    const code = code62();
+    const drop = document.getElementById("drop"), beam = document.getElementById("beam");
+    const keep = document.getElementById("keep"), res = document.getElementById("result");
+    drop.textContent = tail.length > 34 ? tail.slice(0,34)+"…" : tail;
+    keep.textContent = code; drop.classList.remove("cut"); res.classList.remove("show");
+    beam.classList.remove("fire"); void beam.offsetWidth; beam.classList.add("fire");
+    setTimeout(() => drop.classList.add("cut"), 350);
+    setTimeout(() => {
+      document.getElementById("code").textContent = code;
+      res.querySelector(".stat").textContent = `https://sho.rt/${code} · clics : 0`;
+      res.classList.add("show");
+    }, 1100);
+  });
+</script>
+</body>
+</html>
